@@ -1165,6 +1165,10 @@ impl Cpu {
         &mut self.input
     }
 
+    pub fn get_ram(&self) -> &Memory {
+        &self.ram
+    }
+
     //
 
     pub fn step(&mut self) {

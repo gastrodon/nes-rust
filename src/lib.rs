@@ -148,4 +148,8 @@ impl Nes {
     pub fn is_power_on(&self) -> bool {
         self.cpu.is_power_on()
     }
+
+    pub fn get_cpu(&self) -> &Cpu {
+        &self.cpu
+    }
 }
