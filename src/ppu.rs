@@ -51,7 +51,7 @@ pub struct Ppu {
     // Internal VRAM read buffer used for VRAM read(ppudata load).
     vram_read_buffer: u8,
 
-    vram: Memory,
+    pub vram: Memory,
 
     // -- For sprites pixels
     sprite_availables: [bool; 256],
