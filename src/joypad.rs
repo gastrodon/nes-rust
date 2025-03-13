@@ -31,7 +31,7 @@ pub struct Joypad {
     register: Register<u8>,
     latch: u8,
     current_button: u8,
-    buttons: [bool; BUTTON_NUM as usize],
+    pub buttons: [bool; BUTTON_NUM as usize],
 }
 
 impl Joypad {

@@ -19,3 +19,18 @@ members = [".", "cli", "wasm"]
 
 [badges]
 travis-ci = {repository = "takahirox/nes-rust"}
+
+[dev-dependencies]
+criterion = "0.5.1"
+flamegraph = "0.6.7"
+
+[features]
+smol_bench = []
+
+[[bench]]
+name = "bootup"
+harness = false
+
+[[bench]]
+name = "step-frame"
+harness = false
