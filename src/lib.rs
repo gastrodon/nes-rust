@@ -152,4 +152,8 @@ impl Nes {
     pub fn get_cpu(&self) -> &Cpu {
         &self.cpu
     }
+
+    pub fn get_mut_cpu(&mut self) -> &mut Cpu {
+        &mut self.cpu
+    }
 }

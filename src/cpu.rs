@@ -1169,6 +1169,10 @@ impl Cpu {
         &self.ram
     }
 
+    pub fn get_mut_ram(&mut self) -> &mut Memory {
+        &mut self.ram
+    }
+
     //
 
     pub fn step(&mut self) {
