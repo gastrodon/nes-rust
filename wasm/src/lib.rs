@@ -157,6 +157,7 @@ impl WasmNes {
     ///
     /// # Arguments
     /// * `buffer` Audio buffer `Float32Array`
+    #[cfg(not(feature = "no_apu"))]
     pub fn update_sample_buffer(&mut self, buffer: &mut [f32]) {
         self.nes.copy_sample_buffer(buffer);
     }

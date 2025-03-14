@@ -11,3 +11,6 @@ wasm-bindgen = "0.2.67"
 name = "nes_rust_wasm"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
+
+[features]
+no_apu = []

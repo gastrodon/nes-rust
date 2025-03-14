@@ -49,6 +49,7 @@ pub struct Cpu {
 
     // other devices
     ppu: Ppu,
+    #[cfg(not(feature = "no_apu"))]
     apu: Apu,
     pub joypad1: Joypad,
     pub joypad2: Joypad,
@@ -1102,6 +1103,7 @@ impl Cpu {
             stall_cycles: 0,
             input: input,
             ppu: Ppu::new(display),
+            #[cfg(not(feature = "no_apu"))]
             apu: Apu::new(audio),
             joypad1: Joypad::new(),
             joypad2: Joypad::new(),
@@ -1117,6 +1119,7 @@ impl Cpu {
         self.power_on = true;
         self.bootup_internal();
         self.ppu.bootup();
+        #[cfg(not(feature = "no_apu"))]
         self.apu.bootup();
     }
 
@@ -1140,6 +1143,7 @@ impl Cpu {
     pub fn reset(&mut self) {
         self.reset_internal();
         self.ppu.reset();
+        #[cfg(not(feature = "no_apu"))]
         self.apu.reset();
         self.interrupt(Interrupts::RESET);
     }
@@ -1157,6 +1161,7 @@ impl Cpu {
         &self.ppu
     }
 
+    #[cfg(not(feature = "no_apu"))]
     pub fn get_mut_apu(&mut self) -> &mut Apu {
         &mut self.apu
     }
@@ -1180,6 +1185,8 @@ impl Cpu {
         for _i in 0..stall_cycles * 3 {
             self.ppu.step(&mut self.rom);
         }
+
+        #[cfg(not(feature = "no_apu"))]
         for _i in 0..stall_cycles {
             // No reference to CPU from APU so detecting if APU DMC needs
             // CPU memory data, loading data, and sending to APU if needed
@@ -1251,6 +1258,7 @@ impl Cpu {
             self.ppu.irq_interrupted = false;
             self.interrupt(Interrupts::IRQ);
         }
+        #[cfg(not(feature = "no_apu"))]
         if self.apu.irq_interrupted {
             self.apu.irq_interrupted = false;
             self.interrupt(Interrupts::IRQ);
@@ -1742,16 +1750,16 @@ impl Cpu {
             return self.ppu.load_register(address & 0x2007, &self.rom);
         }
 
-        if address >= 0x4000 && address < 0x4014 {
+        #[cfg(not(feature = "no_apu"))]
+        if (address >= 0x4000 && address < 0x4014)
+            || address == 0x4015
+            || (address >= 0x4017 && address < 0x4020)
+        {
             return self.apu.load_register(address);
         }
 
         if address == 0x4014 {
             return self.ppu.load_register(address, &self.rom);
-        }
-
-        if address == 0x4015 {
-            return self.apu.load_register(address);
         }
 
         if address == 0x4016 {
@@ -1760,10 +1768,6 @@ impl Cpu {
 
         if address == 0x4017 {
             return self.joypad2.load_register();
-        }
-
-        if address >= 0x4017 && address < 0x4020 {
-            return self.apu.load_register(address);
         }
 
         if address >= 0x4020 && address < 0x6000 {
@@ -1816,7 +1820,11 @@ impl Cpu {
                 .store_register(address & 0x2007, value, &mut self.rom);
         }
 
-        if address >= 0x4000 && address < 0x4014 {
+        #[cfg(not(feature = "no_apu"))]
+        if (address >= 0x4000 && address < 0x4014)
+            || address == 0x4015
+            || (address >= 0x4017 && address < 0x4020)
+        {
             self.apu.store_register(address, value);
         }
 
@@ -1838,17 +1846,9 @@ impl Cpu {
             self.stall_cycles += 514;
         }
 
-        if address == 0x4015 {
-            self.apu.store_register(address, value);
-        }
-
         if address == 0x4016 {
             self.joypad1.store_register(value);
             self.joypad2.store_register(value); // to clear the joypad2 state
-        }
-
-        if address >= 0x4017 && address < 0x4020 {
-            self.apu.store_register(address, value);
         }
 
         // cartridge space

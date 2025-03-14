@@ -121,6 +121,7 @@ impl Nes {
     ///
     /// # Arguments
     /// * `buffer`
+    #[cfg(not(feature = "no_apu"))]
     pub fn copy_sample_buffer(&mut self, buffer: &mut [f32]) {
         self.cpu
             .get_mut_apu()
