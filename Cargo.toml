@@ -27,6 +27,7 @@ flamegraph = "0.6.7"
 [features]
 smol_bench = []
 no_apu = []
+no_render = []
 
 [[bench]]
 name = "bootup"

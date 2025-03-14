@@ -29,19 +29,29 @@ pub struct Ppu {
     fine_x_scroll: u8,
 
     // 8-bit register and its latch for nametable
+    #[cfg(not(feature = "no_render"))]
     name_table_latch: u8,
+    #[cfg(not(feature = "no_render"))]
     name_table: Register<u8>,
 
     // Two 16-bit shift registers and their latches for two pattern table tiles
+    #[cfg(not(feature = "no_render"))]
     pattern_table_low_latch: u8,
+    #[cfg(not(feature = "no_render"))]
     pattern_table_high_latch: u8,
+    #[cfg(not(feature = "no_render"))]
     pattern_table_low: Register<u16>,
+    #[cfg(not(feature = "no_render"))]
     pattern_table_high: Register<u16>,
 
     // Two 16-bit shift registers and their latches for palette attributes.
+    #[cfg(not(feature = "no_render"))]
     attribute_table_low_latch: u8,
+    #[cfg(not(feature = "no_render"))]
     attribute_table_high_latch: u8,
+    #[cfg(not(feature = "no_render"))]
     attribute_table_low: Register<u16>,
+    #[cfg(not(feature = "no_render"))]
     attribute_table_high: Register<u16>,
 
     //
@@ -54,9 +64,13 @@ pub struct Ppu {
     pub vram: Memory,
 
     // -- For sprites pixels
+    #[cfg(not(feature = "no_render"))]
     sprite_availables: [bool; 256],
+    #[cfg(not(feature = "no_render"))]
     sprite_ids: [u8; 256],
+    #[cfg(not(feature = "no_render"))]
     sprite_palette_addresses: [u16; 256],
+    #[cfg(not(feature = "no_render"))]
     sprite_priorities: [u8; 256],
 
     // Primary OAM, holds 64 sprites for the frame
@@ -125,6 +139,7 @@ pub struct Ppu {
     pub irq_interrupted: bool,
 }
 
+#[cfg(not(feature = "no_render"))]
 static PALETTES: [u32; 0x40] = [
     /* 0x00 */ 0xff757575, /* 0x01 */ 0xff8f1b27, /* 0x02 */ 0xffab0000,
     /* 0x03 */ 0xff9f0047, /* 0x04 */ 0xff77008f, /* 0x05 */ 0xff1300ab,
@@ -162,15 +177,24 @@ impl Ppu {
             temporal_vram_address: 0,
             vram: Memory::new(vec![0; 16 * 1024]), // 16KB
             data_bus: 0,
+            #[cfg(not(feature = "no_render"))]
             name_table_latch: 0,
+            #[cfg(not(feature = "no_render"))]
             attribute_table_low_latch: 0,
+            #[cfg(not(feature = "no_render"))]
             attribute_table_high_latch: 0,
+            #[cfg(not(feature = "no_render"))]
             pattern_table_low_latch: 0,
+            #[cfg(not(feature = "no_render"))]
             pattern_table_high_latch: 0,
             register_first_store: true,
+            #[cfg(not(feature = "no_render"))]
             sprite_availables: [false; 256],
+            #[cfg(not(feature = "no_render"))]
             sprite_ids: [0; 256],
+            #[cfg(not(feature = "no_render"))]
             sprite_palette_addresses: [0; 256],
+            #[cfg(not(feature = "no_render"))]
             sprite_priorities: [0; 256],
             oamaddr: Register::<u8>::new(),
             oamdata: Register::<u8>::new(),
@@ -184,10 +208,15 @@ impl Ppu {
             ppumask: PpuMaskRegister::new(),
             ppustatus: PpuStatusRegister::new(),
             ppuscroll: Register::<u8>::new(),
+            #[cfg(not(feature = "no_render"))]
             name_table: Register::<u8>::new(),
+            #[cfg(not(feature = "no_render"))]
             attribute_table_low: Register::<u16>::new(),
+            #[cfg(not(feature = "no_render"))]
             attribute_table_high: Register::<u16>::new(),
+            #[cfg(not(feature = "no_render"))]
             pattern_table_low: Register::<u16>::new(),
+            #[cfg(not(feature = "no_render"))]
             pattern_table_high: Register::<u16>::new(),
             display: display,
             nmi_interrupted: false,
@@ -213,11 +242,16 @@ impl Ppu {
     }
 
     pub fn step(&mut self, rom: &mut Rom) {
-        self.render_pixel(rom);
-        self.shift_registers();
-        self.fetch(rom);
-        self.evaluate_sprites(rom);
+        #[cfg(not(feature = "no_render"))]
+        {
+            self.render_pixel(rom);
+            self.shift_registers();
+            self.fetch(rom);
+            self.evaluate_sprites(rom);
+        }
+
         self.update_flags(rom);
+        #[cfg(not(feature = "no_render"))]
         self.countup_scroll_counters();
         self.countup_cycle();
     }
@@ -447,6 +481,7 @@ impl Ppu {
 		}
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn render_pixel(&mut self, rom: &Rom) {
         // Note: this comparison order is for performance.
         if self.cycle >= 257 || self.scanline >= 240 || self.cycle == 0 {
@@ -509,6 +544,7 @@ impl Ppu {
         self.display.render_pixel(x, y, c);
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn get_background_palette_address(&self) -> u16 {
         // fine_x_scroll selects 16-bit shifts register.
         let pos = 15 - (self.fine_x_scroll & 0xF);
@@ -522,6 +558,7 @@ impl Ppu {
         0x3F00 + offset as u16
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn shift_registers(&mut self) {
         if self.scanline >= 240 && self.scanline <= 260 {
             return;
@@ -535,6 +572,7 @@ impl Ppu {
         }
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn fetch(&mut self, rom: &Rom) {
         // No fetch during post-rendering scanline 240 and vblank interval 241-260
         if self.scanline >= 240 && self.scanline <= 260 {
@@ -600,6 +638,7 @@ impl Ppu {
         };
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn fetch_name_table(&mut self, rom: &Rom) {
         // A nametable is a 1024 byte area of memory used by the PPU to lay out backgrounds.
         // Each byte in the nametable controls one 8x8 pixel character cell, and each nametable
@@ -621,6 +660,7 @@ impl Ppu {
         self.name_table_latch = self.load(0x2000 | (self.current_vram_address & 0x0FFF), rom);
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn fetch_attribute_table(&mut self, rom: &Rom) {
         // @TODO: Implement properly
 
@@ -686,6 +726,7 @@ impl Ppu {
         };
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn fetch_pattern_table_low(&mut self, rom: &Rom) {
         let fine_scroll_y = (self.current_vram_address >> 12) & 0x7;
         let index = self.ppuctrl.background_pattern_table_base_address()
@@ -694,6 +735,7 @@ impl Ppu {
         self.pattern_table_low_latch = self.load(index, rom);
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn fetch_pattern_table_high(&mut self, rom: &Rom) {
         let fine_scroll_y = (self.current_vram_address >> 12) & 0x7;
         let index = self.ppuctrl.background_pattern_table_base_address()
@@ -860,6 +902,7 @@ impl Ppu {
         self.ppuaddr.store(self.current_vram_address as u8 & 0xFF);
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn evaluate_sprites(&mut self, rom: &Rom) {
         // oamaddr is set to 0 during cycle 257-320 of the pre-render and visible scanlines.
         // @TODO: Optimize
@@ -891,6 +934,7 @@ impl Ppu {
         }
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn process_sprite_pixels(&mut self, rom: &Rom) {
         for i in 0..self.sprite_availables.len() {
             self.sprite_availables[i] = false;
@@ -974,6 +1018,7 @@ impl Ppu {
             }
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn get_pattern_table_element_for_sprite(
         &self,
         s: &Sprite,
@@ -1020,6 +1065,7 @@ impl Ppu {
         (((higher_bits >> pos) & 1) << 1) | ((lower_bits >> pos) & 1)
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn load_palette(&self, address: u8) -> u32 {
         // In greyscale mode, mask the palette index with 0x30 and
         // read from the grey column 0x00, 0x10, 0x20, or 0x30
@@ -1030,6 +1076,7 @@ impl Ppu {
         PALETTES[(address & mask) as usize] & 0xFFFFFF
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn get_emphasis_color(&self, mut c: u32) -> u32 {
         // Color emphasis bases on ppumask
         // @TODO: Implement properly
@@ -1085,6 +1132,7 @@ impl PpuControlRegister {
 
     // Bit 5. Sprite height
     // -- 0: 8 (8x8 pixels), 1: 16 (8x16 pixels)
+    #[cfg(not(feature = "no_render"))]
     fn sprite_height(&self) -> u8 {
         match self.register.is_bit_set(5) {
             false => 8,
@@ -1094,6 +1142,7 @@ impl PpuControlRegister {
 
     // Bit 4. Background pattern table address
     // -- 0: 0x0000, 1: 0x1000
+    #[cfg(not(feature = "no_render"))]
     fn background_pattern_table_base_address(&self) -> u16 {
         match self.register.is_bit_set(4) {
             false => 0,
@@ -1103,6 +1152,7 @@ impl PpuControlRegister {
 
     // Bit 3. Sprite pattern table address for 8x8 sprites
     // -- 0: 0x0000, 1: 0x1000
+    #[cfg(not(feature = "no_render"))]
     fn sprite_pattern_table_base_address(&self) -> u16 {
         match self.register.is_bit_set(3) {
             false => 0,
@@ -1154,16 +1204,19 @@ impl PpuMaskRegister {
     }
 
     // Bit 7. Emphasizes blue
+    #[cfg(not(feature = "no_render"))]
     fn is_emphasis_blue(&self) -> bool {
         self.register.is_bit_set(7)
     }
 
     // Bit 6. Emphasizes green on the NTSC, while red on the PAL
+    #[cfg(not(feature = "no_render"))]
     fn is_emphasis_green(&self) -> bool {
         self.register.is_bit_set(6)
     }
 
     // Bit 5. Emphasizes ref on the NTSC, while green on the PAL
+    #[cfg(not(feature = "no_render"))]
     fn is_emphasis_red(&self) -> bool {
         self.register.is_bit_set(5)
     }
@@ -1182,18 +1235,21 @@ impl PpuMaskRegister {
 
     // Bit 2. Show sprites in leftmost 8 pixels of screen.
     // -- 0: invisible, 1: visible
+    #[cfg(not(feature = "no_render"))]
     fn is_left_most_sprites_visible(&self) -> bool {
         self.register.is_bit_set(2)
     }
 
     // Bit 1. Show background in leftmost 8 pixels of screen.
     // -- 0: invisible, 1: visible
+    #[cfg(not(feature = "no_render"))]
     fn is_left_most_background_visible(&self) -> bool {
         self.register.is_bit_set(1)
     }
 
     // Bit 0. Greyscale
     // -- 0: normal color, 1: produce a greyscale display
+    #[cfg(not(feature = "no_render"))]
     fn is_greyscale(&self) -> bool {
         self.register.is_bit_set(0)
     }
@@ -1241,6 +1297,7 @@ impl PpuStatusRegister {
     // Bit 6. Sprite zero hit.
     // Set when a nonzero pixel of sprite 0 overlaps a nonzero background pixel.
     // Cleared at dot 1 of the pre-render line. Used for raster timing.
+    #[cfg(not(feature = "no_render"))]
     fn set_zero_hit(&mut self) {
         self.register.set_bit(6);
     }
@@ -1252,6 +1309,7 @@ impl PpuStatusRegister {
     // Bit 5. Sprite overflow.
     // Set more than eight sprites appear on a scanline.
     // Cleared at dot 1 of the pre-render line 261.
+    #[cfg(not(feature = "no_render"))]
     fn set_overflow(&mut self) {
         self.register.set_bit(5);
     }
@@ -1278,10 +1336,12 @@ impl SpritesManager {
         self.memory.store(address as u32, value);
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn get_num(&self) -> u8 {
         (self.memory.capacity() / 4) as u8
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn get(&self, index: u8) -> Sprite {
         Sprite {
             byte0: self.load(index * 4 + 0),
@@ -1291,6 +1351,7 @@ impl SpritesManager {
         }
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn copy(&mut self, index: u8, sprite: Sprite) {
         self.store(index * 4 + 0, sprite.byte0);
         self.store(index * 4 + 1, sprite.byte1);
@@ -1298,6 +1359,7 @@ impl SpritesManager {
         self.store(index * 4 + 3, sprite.byte3);
     }
 
+    #[cfg(not(feature = "no_render"))]
     fn reset(&mut self) {
         for i in 0..self.get_num() {
             self.store(i * 4 + 0, 0xff);
@@ -1308,6 +1370,7 @@ impl SpritesManager {
     }
 }
 
+#[cfg(not(feature = "no_render"))]
 struct Sprite {
     byte0: u8,
     byte1: u8,
@@ -1315,6 +1378,7 @@ struct Sprite {
     byte3: u8,
 }
 
+#[cfg(not(feature = "no_render"))]
 impl Sprite {
     fn get_y(&self) -> u8 {
         self.byte0
