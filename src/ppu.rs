@@ -749,10 +749,12 @@ impl Ppu {
         // (reading at cycle 1~2 suppresses NMI, see load_register())
         // @TODO: Safer and more appropriate approach.
 
-        if self.cycle == 20 && self.scanline == 241 {
-            if self.ppustatus.is_vblank() && self.ppuctrl.is_nmi_enabled() {
-                self.nmi_interrupted = true;
-            }
+        if self.cycle == 20
+            && self.scanline == 241
+            && self.ppustatus.is_vblank()
+            && self.ppuctrl.is_nmi_enabled()
+        {
+            self.nmi_interrupted = true;
         }
 
         // @TODO: check this driving IRQ counter for MMC3Mapper timing is correct
@@ -776,11 +778,9 @@ impl Ppu {
             return;
         }
 
-        if self.scanline == 261 {
-            if self.cycle >= 280 && self.cycle <= 304 {
-                self.current_vram_address &= !0x7BE0;
-                self.current_vram_address |= self.temporal_vram_address & 0x7BE0;
-            }
+        if self.scanline == 261 && self.cycle >= 280 && self.cycle <= 304 {
+            self.current_vram_address &= !0x7BE0;
+            self.current_vram_address |= self.temporal_vram_address & 0x7BE0;
         }
 
         if self.cycle == 0 || (self.cycle >= 258 && self.cycle <= 320) {
