@@ -1206,7 +1206,7 @@ impl Cpu {
 
     pub fn step_frame(&mut self) {
         // Input handling should be here? Or under nes.rs?
-        // self.handle_inputs();
+        self.handle_inputs();
         // @TODO: More precise frame update detection?
         let ppu_frame = self.ppu.frame;
         loop {
