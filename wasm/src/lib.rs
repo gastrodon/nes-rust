@@ -1,14 +1,14 @@
-extern crate nes_rust;
+extern crate nes_rust_slim;
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
 
-use nes_rust::button;
-use nes_rust::default_audio::DefaultAudio;
-use nes_rust::default_display::DefaultDisplay;
-use nes_rust::default_input::DefaultInput;
-use nes_rust::rom::Rom;
-use nes_rust::Nes;
+use nes_rust_slim::button;
+use nes_rust_slim::default_audio::DefaultAudio;
+use nes_rust_slim::default_display::DefaultDisplay;
+use nes_rust_slim::default_input::DefaultInput;
+use nes_rust_slim::rom::Rom;
+use nes_rust_slim::Nes;
 
 // @TODO: Reuse button::Button instead of defining Button here
 

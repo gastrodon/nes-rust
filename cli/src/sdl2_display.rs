@@ -5,11 +5,11 @@ use sdl2::video::Window;
 use sdl2::video::WindowContext;
 use sdl2::Sdl;
 
-use nes_rust::display::Display;
-use nes_rust::display::PIXELS_CAPACITY;
-use nes_rust::display::PIXEL_BYTES;
-use nes_rust::display::SCREEN_HEIGHT;
-use nes_rust::display::SCREEN_WIDTH;
+use nes_rust_slim::display::Display;
+use nes_rust_slim::display::PIXELS_CAPACITY;
+use nes_rust_slim::display::PIXEL_BYTES;
+use nes_rust_slim::display::SCREEN_HEIGHT;
+use nes_rust_slim::display::SCREEN_WIDTH;
 
 pub struct Sdl2Display {
     pixels: [u8; PIXELS_CAPACITY],

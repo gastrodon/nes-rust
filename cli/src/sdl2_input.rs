@@ -1,8 +1,8 @@
 use sdl2::keyboard::Keycode;
 use sdl2::EventPump;
 
-use nes_rust::button;
-use nes_rust::input::Input;
+use nes_rust_slim::button;
+use nes_rust_slim::input::Input;
 
 // @TODO: Be Configurable
 fn keycode_to_button(key: Keycode) -> Option<button::Button> {

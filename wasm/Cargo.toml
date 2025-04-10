@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Takahiro <hogehoge@gachapin.jp>"]
 
 [dependencies]
-nes_rust = { path = "../" }
+nes_rust_slim = { path = "../" }
 wasm-bindgen = "0.2.67"
 
 [lib]

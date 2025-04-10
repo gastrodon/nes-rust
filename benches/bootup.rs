@@ -1,8 +1,8 @@
 extern crate criterion;
-extern crate nes_rust;
+extern crate nes_rust_slim;
 
 use criterion::Criterion;
-use nes_rust::{
+use nes_rust_slim::{
     default_audio::DefaultAudio, default_display::DefaultDisplay, default_input::DefaultInput,
     rom::Rom, Nes,
 };

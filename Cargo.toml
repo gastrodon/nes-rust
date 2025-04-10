@@ -1,18 +1,15 @@
 [package]
-name = "nes_rust"
+name = "nes_rust_slim"
 version = "0.2.0"
 description = "NES emulator written in Rust"
-authors = ["Takahiro <hogehoge@gachapin.jp>"]
+authors = ["Takahiro <hogehoge@gachapin.jp>", "eva <mail@gastrodon.io>"]
 license = "MIT"
-homepage = "https://github.com/takahirox/nes-rust"
-repository = "https://github.com/takahirox/nes-rust"
+homepage = "https://github.com/gastrodon/nes-rust"
+repository = "https://github.com/gastrodon/nes-rust"
 exclude = ["resources/*", "screenshots/*", "roms/*", "cli/*", "wasm/*"]
 
 [workspace]
 members = [".", "cli", "wasm"]
-
-[badges]
-travis-ci = { repository = "takahirox/nes-rust" }
 
 [dev-dependencies]
 criterion = "0.5.1"

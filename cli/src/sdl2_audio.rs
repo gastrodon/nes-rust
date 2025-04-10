@@ -1,8 +1,8 @@
 use sdl2::audio::{AudioCallback, AudioDevice, AudioSpecDesired};
 use sdl2::AudioSubsystem;
 
-use nes_rust::audio::Audio;
-use nes_rust::audio::BUFFER_CAPACITY;
+use nes_rust_slim::audio::Audio;
+use nes_rust_slim::audio::BUFFER_CAPACITY;
 
 static mut BUFFER_INDEX: usize = 0;
 static mut BUFFER: [f32; BUFFER_CAPACITY] = [0.0; BUFFER_CAPACITY];

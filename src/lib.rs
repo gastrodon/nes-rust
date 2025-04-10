@@ -27,11 +27,11 @@ use rom::Rom;
 /// use std::fs::File;
 /// use std::io::Read;
 /// use std::time::Duration;
-/// use nes_rust::Nes;
-/// use nes_rust::rom::Rom;
-/// use nes_rust::default_input::DefaultInput;
-/// use nes_rust::default_audio::DefaultAudio;
-/// use nes_rust::default_display::DefaultDisplay;
+/// use nes_rust_slim::Nes;
+/// use nes_rust_slim::rom::Rom;
+/// use nes_rust_slim::default_input::DefaultInput;
+/// use nes_rust_slim::default_audio::DefaultAudio;
+/// use nes_rust_slim::default_display::DefaultDisplay;
 ///
 /// let input = Box::new(DefaultInput::new());
 /// let display = Box::new(DefaultDisplay::new());
