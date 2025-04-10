@@ -2,3 +2,4 @@ Cargo.lock
 target/
 cli/SDL2.dll
 flamegraph*.svg
+perf.*
